@@ -2,6 +2,14 @@
 #
 # axel@cern.ch, 2014-02-07
 
+p=$(egrep -c "^processor" /proc/cpuinfo)
+
+if [ ! -h python -a type -P python2 2>/dev/null ]
+then
+	ln -s `type -P python2` python
+	export PATH=`pwd`:$PATH
+fi
+
 function update {
     cd src || exit 1
     echo '++ Updating llvm...'
@@ -12,7 +20,7 @@ function update {
     echo '++ Updating cling...'
     cd ../cling || exit 1
     git pull || exit 1
-    echo 'Update done. Now run "cd obj; make -j8; make install".'
+    echo 'Update done. Now run "cd obj; make -j$p; make install".'
 }
 
 function clone {
@@ -47,10 +55,10 @@ function initial {
 
 function build {
     echo ':: Building...'
-    make -j8 || exit 1
+    make -j$p || exit 1
     rm -rf ../inst
     echo ':: Installing...'
-    make -j8 install || exit 1
+    make -j$p install || exit 1
     echo ':: SUCCESS.'
 }
 
