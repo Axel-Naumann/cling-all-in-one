@@ -4,9 +4,9 @@
 
 p=$(./processors)
 
-if [ ! -h python -a type -P python2 2>/dev/null ]
+if type -P python2 >/dev/null
 then
-	ln -s `type -P python2` python
+	[[ ! -h python ]] && ln -s `type -P python2` python
 	export PATH=`pwd`:$PATH
 fi
 
