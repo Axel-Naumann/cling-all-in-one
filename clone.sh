@@ -2,7 +2,7 @@
 #
 # axel@cern.ch, 2014-02-07
 
-p=$(egrep -c "^processor" /proc/cpuinfo)
+p=$(./processors)
 
 if [ ! -h python -a type -P python2 2>/dev/null ]
 then
