@@ -2,6 +2,7 @@
 #
 # axel@cern.ch, 2014-02-07
 
+# which is not ideal, see http://stackoverflow.com/a/677212/1392758
 python=`which python`
 if type python2 > /dev/null 2>&1; then
     python=`which python2`
