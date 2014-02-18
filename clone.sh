@@ -2,6 +2,18 @@
 #
 # axel@cern.ch, 2014-02-07
 
+python=`which python`
+if type python2 > /dev/null 2>&1; then
+    python=`which python2`
+fi
+
+cores=`$python <(cat <<EOF
+import multiprocessing
+print (multiprocessing.cpu_count())
+EOF
+)`
+echo Using $cores cores.
+
 function update {
     cd src || exit 1
     echo '++ Updating llvm...'
@@ -12,7 +24,8 @@ function update {
     echo '++ Updating cling...'
     cd ../cling || exit 1
     git pull || exit 1
-    echo 'Update done. Now run "cd obj; make -j8; make install".'
+    echo '++ Update done.'
+    cd ../../..
 }
 
 function clone {
@@ -37,21 +50,26 @@ function initial {
     clone clang cling-patches
     clone cling master
     cd ../..
+}
 
-    mkdir obj || exit 1
+function configure {
+    mkdir -p obj || exit 1
     INSTDIR=`pwd`/inst
     cd obj || exit 1
     echo '>> Configuring...'
-    ../src/configure --enable-targets=host --prefix=$INSTDIR > /dev/null || exit 1
+    ../src/configure --disable-compiler-version-checks --with-python=$python --enable-targets=host --prefix=$INSTDIR > /dev/null || exit 1
+    cd ..
 }
 
 function build {
+    cd obj
     echo ':: Building...'
-    make -j8 || exit 1
+    make -j$cores || exit 1
     rm -rf ../inst
     echo ':: Installing...'
-    make -j8 install || exit 1
+    make -j$cores install || exit 1
     echo ':: SUCCESS.'
+    cd ..
 }
 
 if [ -d src ]; then
@@ -59,6 +77,10 @@ if [ -d src ]; then
     update
 else
     initial
+fi
+
+if ! [ -e obj/Makefile ]; then
+    configure
 fi
 
 build
