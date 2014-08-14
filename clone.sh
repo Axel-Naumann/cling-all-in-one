@@ -58,7 +58,7 @@ function configure {
     INSTDIR=`pwd`/inst
     cd obj || exit 1
     echo '>> Configuring...'
-    ../src/configure --disable-compiler-version-checks --with-python=$python --enable-targets=host --prefix=$INSTDIR > /dev/null || exit 1
+    ../src/configure --enable-cxx11 --disable-compiler-version-checks --with-python=$python --enable-targets=host --prefix=$INSTDIR > /dev/null || exit 1
     cd ..
 }
 
