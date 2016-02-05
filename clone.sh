@@ -58,7 +58,7 @@ function configure {
     INSTDIR=`pwd`/inst
     cd obj || exit 1
     echo '>> Configuring...'
-    ../src/configure --enable-cxx11 --disable-compiler-version-checks --with-python=$python --enable-targets=host --prefix=$INSTDIR > /dev/null || exit 1
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTDIR -DPYTHON_EXECUTABLE=$python ../src > /dev/null || exit 1
     cd ..
 }
 
