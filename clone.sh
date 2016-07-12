@@ -58,7 +58,7 @@ function configure {
     INSTDIR=`pwd`/inst
     cd obj || exit 1
     echo '>> Configuring...'
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTDIR -DPYTHON_EXECUTABLE=$python ../src > /dev/null || exit 1
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$INSTDIR -DPYTHON_EXECUTABLE=$python ../src > /dev/null || exit 1
     cd ..
 }
 
