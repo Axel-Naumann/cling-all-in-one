@@ -1,6 +1,10 @@
 #!/bin/bash
 #
 # axel@cern.ch, 2014-02-07
+#
+# arguments:
+#   [cores]  number of cores to use, optional
+#            default: all detected cores
 
 # which is not ideal, see http://stackoverflow.com/a/677212/1392758
 python=`which python`
@@ -8,11 +12,12 @@ if type python2 > /dev/null 2>&1; then
     python=`which python2`
 fi
 
-cores=`$python <(cat <<EOF
+allcores=`$python <(cat <<EOF
 import multiprocessing
 print (multiprocessing.cpu_count())
 EOF
 )`
+cores=${1:-${allcores}}
 echo Using $cores cores.
 
 function update {
