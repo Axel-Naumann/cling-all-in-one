@@ -11,6 +11,9 @@ python=`which python`
 if type python2 > /dev/null 2>&1; then
     python=`which python2`
 fi
+if type python3 > /dev/null 2>&1; then
+    python=`which python3`
+fi
 
 allcores=`$python <(cat <<EOF
 import multiprocessing
@@ -63,7 +66,7 @@ function configure {
     INSTDIR=`pwd`/inst
     cd obj || exit 1
     echo '>> Configuring...'
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$INSTDIR -DPYTHON_EXECUTABLE=$python ../src > /dev/null || exit 1
+    cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_TOOLS=Off -DCMAKE_INSTALL_PREFIX=$INSTDIR -DPYTHON_EXECUTABLE=$python ../src > /dev/null || exit 1
     cd ..
 }
 
