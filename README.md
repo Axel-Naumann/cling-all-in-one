@@ -5,7 +5,7 @@ Get and build llvm, clang and cling. Can also be used for subsequent updates.
 Usage:
 
 ```
-git clone https://github.com/karies/cling-all-in-one.git
+git clone https://github.com/Axel-Naumann/cling-all-in-one.git
 cd cling-all-in-one
 ./clone.sh
 ```
