@@ -8,9 +8,6 @@
 
 # which is not ideal, see http://stackoverflow.com/a/677212/1392758
 python=`which python`
-if type python2 > /dev/null 2>&1; then
-    python=`which python2`
-fi
 if type python3 > /dev/null 2>&1; then
     python=`which python3`
 fi
@@ -24,28 +21,20 @@ cores=${1:-${allcores}}
 echo Using $cores cores.
 
 function update {
-    cd src || exit 1
+    cd llvm-project || exit 1
     echo '++ Updating llvm...'
-    git pull || exit 1
-    cd tools/clang || exit 1
-    echo '++ Updating clang...'
     git pull || exit 1
     echo '++ Updating cling...'
     cd ../cling || exit 1
     git pull || exit 1
     echo '++ Update done.'
-    cd ../../..
+    cd ..
 }
 
 function clone {
     # clone what branch where
-    where=$3
-    if [ "$where" = "" ]; then
-        where=$1
-    fi
     echo '>> Cloning '$1'...'
-    git clone http://root.cern.ch/git/${1}.git $where > /dev/null || exit 1
-    ( cd $where && git checkout $2 )
+    git clone --depth=1 --branch $2 https://github.com/root-project/${1}.git > /dev/null || exit 1
 }
 
 function initial {
@@ -54,24 +43,21 @@ function initial {
         exit 1
     fi
 
-    clone llvm cling-patches src
-    cd src/tools || exit 1
-    clone clang cling-patches
+    clone llvm-project cling-llvm13
     clone cling master
-    cd ../..
 }
 
 function configure {
-    mkdir -p obj || exit 1
+    mkdir -p build || exit 1
     INSTDIR=`pwd`/inst
-    cd obj || exit 1
+    cd build || exit 1
     echo '>> Configuring...'
-    cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_TOOLS=Off -DCMAKE_INSTALL_PREFIX=$INSTDIR -DPYTHON_EXECUTABLE=$python ../src > /dev/null || exit 1
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTDIR -DLLVM_EXTERNAL_PROJECTS=cling -DLLVM_EXTERNAL_CLING_SOURCE_DIR=/home/axel/build/cling/llvm-mono/cling -DLLVM_ENABLE_PROJECTS="clang" -DLLVM_TARGETS_TO_BUILD="host;NVPTX" -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_TOOLS=Off ../llvm-project/llvm/ > /dev/null || exit 1
     cd ..
 }
 
 function build {
-    cd obj
+    cd build
     echo ':: Building...'
     make -j$cores || exit 1
     rm -rf ../inst
@@ -81,14 +67,14 @@ function build {
     cd ..
 }
 
-if [ -d src ]; then
+if [ -d cling ]; then
     # update mode
     update
 else
     initial
 fi
 
-if ! [ -e obj/Makefile ]; then
+if ! [ -e build/Makefile ]; then
     configure
 fi
 
