@@ -43,7 +43,7 @@ function initial {
         exit 1
     fi
 
-    clone llvm-project cling-llvm13
+    clone llvm-project cling-llvm16
     clone cling master
 }
 
